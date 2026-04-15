@@ -1,116 +1,388 @@
+<!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RivalScope Prototype</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
-        body { font-family: 'Inter', 'Pretendard', sans-serif; background-color: #f0f0e8; }
-        .dashed-border { border: 2px dashed #ccc; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>서비스 이용약관 UI</title>
+  <style>
+    :root{
+      /* Theme */
+      --brand:#10B981;   /* main */
+      --mint:#E8F5F1;    /* card bg */
+      --deep:#064E3B;    /* text */
+      --gold:#FFD700;    /* accent */
+      --bg:#F0F2F5;      /* outer bg */
+
+      /* UI */
+      --white:#fff;
+      --line: rgba(6,78,59,.14);
+      --muted: rgba(6,78,59,.60);
+      --shadow: 0 18px 50px rgba(6,78,59,.14);
+      --radius: 22px;
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Apple SD Gothic Neo","Noto Sans KR", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--deep);
+      display:flex;
+      justify-content:center;
+      padding: 22px;
+    }
+
+    /* Phone frame */
+    .phone{
+      width: 390px;
+      max-width: 94vw;
+      border-radius: 34px;
+      overflow:hidden;
+      box-shadow: 0 28px 70px rgba(0,0,0,.18);
+      background: #0c0f12;
+      padding: 10px;
+    }
+    .screen{
+      border-radius: 26px;
+      overflow:hidden;
+      background: linear-gradient(180deg,
+        rgba(16,185,129,.35) 0%,
+        rgba(16,185,129,.18) 30%,
+        rgba(240,242,245,1) 100%);
+      min-height: 720px;
+      position:relative;
+      padding: 18px 16px 18px;
+    }
+
+    /* Top bar */
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding: 2px 2px 14px;
+      color: rgba(6,78,59,.9);
+    }
+    .icon-btn{
+      width:40px;height:40px;
+      border-radius: 14px;
+      display:grid;place-items:center;
+      background: rgba(255,255,255,.55);
+      border: 1px solid rgba(6,78,59,.10);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 24px rgba(6,78,59,.08);
+      cursor:pointer;
+      user-select:none;
+      font-size:18px;
+    }
+    .icon-btn:active{ transform: scale(.98); }
+
+    /* Main card */
+    .card{
+      background: rgba(232,245,241,.82);
+      border: 1px solid rgba(16,185,129,.22);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+
+    /* Header inside card */
+    .card-header{
+      padding: 18px 16px 14px;
+      background: rgba(255,255,255,.55);
+      border-bottom: 1px solid rgba(6,78,59,.10);
+      display:flex;
+      align-items:center;
+      gap: 12px;
+    }
+    .mascot{
+      width:42px;height:42px;
+      border-radius: 16px;
+      background: radial-gradient(circle at 30% 30%, #fff 0%, rgba(16,185,129,.16) 45%, rgba(16,185,129,.08) 100%);
+      border: 1px solid rgba(16,185,129,.22);
+      display:grid;place-items:center;
+      font-size: 22px;
+      flex:0 0 auto;
+    }
+    .title{
+      font-size: 22px;
+      font-weight: 950;
+      letter-spacing: -0.4px;
+    }
+
+    /* Inner panel */
+    .panel{
+      margin: 16px;
+      border-radius: 22px;
+      background: rgba(255,255,255,.55);
+      border: 2px solid rgba(6,78,59,.45);
+      box-shadow: 0 18px 40px rgba(6,78,59,.10);
+      overflow:hidden;
+    }
+
+    .agree-all{
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      padding: 18px 16px;
+      background: rgba(232,245,241,.75);
+      border-bottom: 1px solid rgba(6,78,59,.12);
+    }
+
+    /* Checkbox styles */
+    .check{
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      font-weight: 900;
+      font-size: 20px;
+      letter-spacing: -0.2px;
+    }
+
+    /* Accessible checkbox */
+    input[type="checkbox"]{
+      appearance:none;
+      -webkit-appearance:none;
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      border: 2px solid rgba(6,78,59,.55);
+      background: rgba(255,255,255,.65);
+      display:grid;
+      place-items:center;
+      cursor:pointer;
+      position:relative;
+    }
+    input[type="checkbox"]::after{
+      content:"";
+      width: 12px;
+      height: 7px;
+      border-left: 3px solid transparent;
+      border-bottom: 3px solid transparent;
+      transform: rotate(-45deg);
+      margin-top: -1px;
+    }
+    input[type="checkbox"]:checked{
+      background: linear-gradient(180deg, rgba(16,185,129,.95), rgba(6,78,59,.92));
+      border-color: rgba(16,185,129,1);
+      box-shadow: 0 10px 22px rgba(16,185,129,.22);
+    }
+    input[type="checkbox"]:checked::after{
+      border-left-color: #fff;
+      border-bottom-color: #fff;
+    }
+    input[type="checkbox"]:focus-visible{
+      outline: 3px solid rgba(255,215,0,.65);
+      outline-offset: 3px;
+    }
+
+    .agree-all .hint{
+      margin-left:auto;
+      font-size: 12px;
+      color: rgba(6,78,59,.55);
+      font-weight: 800;
+    }
+
+    /* List */
+    .list{
+      padding: 10px 10px 12px;
+      background: rgba(255,255,255,.62);
+    }
+    .item{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      padding: 14px 10px;
+      border-radius: 14px;
+    }
+    .item + .item{
+      border-top: 1px solid rgba(6,78,59,.10);
+      border-radius: 0;
+    }
+    .item .label{
+      flex:1;
+      font-size: 14px;
+      color: rgba(6,78,59,.92);
+      font-weight: 800;
+      line-height: 1.25;
+    }
+    .item .sub{
+      display:block;
+      font-weight: 700;
+      color: rgba(6,78,59,.55);
+      font-size: 12px;
+      margin-top: 3px;
+    }
+    .chev{
+      width: 34px;
+      height: 34px;
+      border-radius: 14px;
+      background: rgba(16,185,129,.12);
+      display:grid;
+      place-items:center;
+      color: rgba(6,78,59,.75);
+      font-weight: 900;
+      flex:0 0 auto;
+    }
+
+    /* Primary button */
+    .cta-wrap{
+      padding: 16px;
+    }
+    .cta{
+      width:100%;
+      border:0;
+      border-radius: 18px;
+      padding: 16px 14px;
+      font-size: 20px;
+      font-weight: 950;
+      letter-spacing: -0.2px;
+      color: #fff;
+      cursor:pointer;
+      background: linear-gradient(180deg, rgba(6,78,59,.92) 0%, rgba(6,78,59,1) 100%);
+      box-shadow: 0 18px 40px rgba(6,78,59,.22);
+      position:relative;
+      overflow:hidden;
+    }
+    .cta::before{
+      content:"";
+      position:absolute;
+      inset: 0;
+      background: radial-gradient(circle at 20% 10%, rgba(255,255,255,.18) 0%, rgba(255,255,255,0) 45%);
+      pointer-events:none;
+    }
+    .cta:active{ transform: scale(.99); }
+
+    /* Enabled/disabled based on required checks */
+    .cta[disabled]{
+      cursor:not-allowed;
+      opacity:.55;
+      filter: grayscale(.2);
+    }
+
+    /* Small gold accent chip (optional) */
+    .accent{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      margin-left:8px;
+      font-size: 12px;
+      font-weight: 900;
+      color: rgba(6,78,59,.9);
+      background: rgba(255,215,0,.32);
+      border: 1px solid rgba(255,215,0,.55);
+      padding: 4px 8px;
+      border-radius: 999px;
+    }
+
+    /* Make the whole experience look like screenshot */
+    .card-pad{ padding-bottom: 6px; }
+  </style>
 </head>
-<body class="bg-[#f0f0e8] p-4">
 
-<div class="w-full max-w-5xl mx-auto bg-[#f7f7f0] rounded-xl shadow-2xl border border-gray-200 overflow-hidden flex flex-col min-h-screen">
-        
-        <header class="bg-white border-b border-gray-200 p-4 flex items-center gap-3">
-            <div class="bg-[#99acff] text-white font-bold p-1 px-2 rounded text-sm">RS</div>
-            <h1 class="text-xl font-bold text-gray-800">RivalScope</h1>
-            <span class="text-gray-400 text-sm">경쟁 게임 리서치 AI</span>
-        </header>
+<body>
+  <div class="phone">
+    <div class="screen">
 
-        <div class="flex flex-1 overflow-auto">
-            <aside class="w-80 bg-white border-r border-gray-200 p-6 flex flex-col gap-6">
-                <div>
-                    <h2 class="text-lg font-bold mb-4">리서치 설정</h2>
-                    <hr class="mb-4">
-                    
-                    <div class="space-y-4 text-sm">
-                        <div>
-                            <label class="block font-semibold mb-1">경쟁 게임명 (필수)</label>
-                            <input id="gameName" type="text" placeholder="예: 원신, 로스트아크..." class="w-full border border-gray-300 rounded p-2 focus:ring-2 focus:ring-[#99acff] outline-none">
-                        </div>
-                        
-                        <div>
-                            <label class="block font-semibold mb-1">우리 게임 장르</label>
-                            <select class="w-full border border-gray-300 rounded p-2">
-                                <option>장르 선택</option>
-                                <option>수집형 RPG</option>
-                                <option>MMORPG</option>
-                                <option>액션/어드벤처</option>
-                            </select>
-                        </div>
+      <div class="topbar">
+        <div class="icon-btn" aria-label="뒤로가기">←</div>
+        <div class="icon-btn" aria-label="도움말">?</div>
+      </div>
 
-                        <div>
-                            <label class="block font-semibold mb-1">우리 게임 주요 특징</label>
-                            <textarea placeholder="수집형 RPG, 20-35세 타겟..." class="w-full border border-gray-300 rounded p-2 h-24 resize-none focus:ring-2 focus:ring-[#99acff] outline-none"></textarea>
-                        </div>
-
-                        <div>
-                            <label class="block font-semibold mb-1">중점 분석 항목</label>
-                            <select class="w-full border border-gray-300 rounded p-2">
-                                <option>전반적 분석</option>
-                                <option>과금 모델(BM)</option>
-                                <option>코어 루프</option>
-                                <option>유저 리뷰 감성 분석</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <button onclick="startResearch()" class="w-full bg-[#8eadfa] hover:bg-[#99acff] text-white font-bold py-3 rounded-lg transition-all active:scale-95">
-                    리서치 시작
-                </button>
-            </aside>
-
-            <main id="mainContent" class="flex-1 p-12 overflow-y-auto relative bg-[#f7f7f0]"
-                <div id="emptyState" class="absolute inset-0 flex items-center justify-center">
-  			<div class="dashed-border rounded-xl p-16 text-center text-gray-500 max-w-md bg-white/50">
-                    <div class="text-4xl mb-4">❓</div>
-                    <p class="font-medium">경쟁 게임명을 입력하고<br>리서치를 시작하세요</p>
-                </div>
-
-                <div id="loadingState" class="hidden text-center">
-                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#99acff] mx-auto mb-4"></div>
-                    <p class="text-gray-600 font-medium">AI가 데이터를 분석 중입니다...</p>
-                </div>
-
-                <div id="resultState" class="hidden w-full max-w-3xl mx-auto" overflow-y-auto bg-white p-8 rounded-lg shadow-inner text-left">
-                    <h3 id="resultTitle" class="text-2xl font-bold mb-4 text-[#99acff]"></h3>
-                    <div id="resultText" class="text-gray-700 leading-relaxed space-y-4"></div>
-                </div>
-            </main>
+      <div class="card card-pad">
+        <div class="card-header">
+          <div class="mascot" aria-hidden="true">🐿️</div>
+          <div class="title">서비스 이용약관</div>
         </div>
-    </div>
 
-    <script>
-        function startResearch() {
-            const gameName = document.getElementById('gameName').value || '입력된 게임';
-            const empty = document.getElementById('emptyState');
-            const loading = document.getElementById('loadingState');
-            const result = document.getElementById('resultState');
-            const resultTitle = document.getElementById('resultTitle');
-            const resultText = document.getElementById('resultText');
+        <div class="panel">
+          <div class="agree-all">
+            <label class="check" for="all">
+              <input id="all" type="checkbox" />
+              <span>전체 동의하기</span>
+            </label>
+            <span class="hint">필수 2개 포함</span>
+          </div>
 
-            empty.classList.add('hidden');
-            loading.classList.remove('hidden');
-            result.classList.add('hidden');
+          <div class="list" role="list">
+            <div class="item" role="listitem">
+              <input id="t1" type="checkbox" />
+              <label class="label" for="t1">
+                서비스 이용약관
+                <span class="sub">필수</span>
+              </label>
+              <div class="chev" aria-hidden="true">›</div>
+            </div>
 
-            setTimeout(() => {
-                loading.classList.add('hidden');
-                result.classList.remove('hidden');
-                resultTitle.innerText = `🔍 ${gameName} 분석 보고서`;
-                
-                resultText.innerHTML = `
-                    <p><strong>1. 시장 포지셔닝:</strong> 해당 게임은 현재 서브컬처 시장 내에서 압도적인 점유율을 차지하고 있습니다.</p>
-                    <p><strong>2. 주요 성공 요인:</strong> 고퀄리티의 그래픽 연출과 정기적인 대규모 업데이트를 통한 유저 리텐션 확보가 핵심입니다.</p>
-                    <p><strong>3. 위험 요소:</strong> 최근 유저들 사이에서 피로도 증가에 대한 목소리가 나오고 있어, 라이트한 콘텐츠 보강이 필요해 보입니다.</p>
-                    <hr class="my-4">
-                    <p class="text-sm text-gray-400 italic">* 본 데이터는 RivalScope AI에 의해 실시간 생성되었습니다.</p>
-                `;
-            }, 1500);
+            <div class="item" role="listitem">
+              <input id="t2" type="checkbox" checked />
+              <label class="label" for="t2">
+                개인정보 수집 및 이용동의
+                <span class="sub">필수</span>
+              </label>
+              <div class="chev" aria-hidden="true">›</div>
+            </div>
+
+            <div class="item" role="listitem">
+              <input id="t3" type="checkbox" />
+              <label class="label" for="t3">
+                마케팅 정보 수신 및 푸시 알림 동의
+                <span class="sub">선택 <span class="accent">혜택</span></span>
+              </label>
+              <div class="chev" aria-hidden="true">›</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cta-wrap">
+          <button class="cta" id="cta" disabled>동의하고 시작하기</button>
+        </div>
+      </div>
+
+      <script>
+        // Required: t1, t2. Optional: t3
+        const all = document.getElementById("all");
+        const t1  = document.getElementById("t1");
+        const t2  = document.getElementById("t2");
+        const t3  = document.getElementById("t3");
+        const cta = document.getElementById("cta");
+
+        function syncAllCheckbox(){
+          const boxes = [t1, t2, t3];
+          const checkedCount = boxes.filter(b => b.checked).length;
+          all.indeterminate = checkedCount > 0 && checkedCount < boxes.length;
+          all.checked = checkedCount === boxes.length;
         }
-    </script>
+
+        function syncCTA(){
+          const requiredOk = t1.checked && t2.checked;
+          cta.disabled = !requiredOk;
+        }
+
+        function update(){
+          syncAllCheckbox();
+          syncCTA();
+        }
+
+        all.addEventListener("change", () => {
+          const v = all.checked;
+          t1.checked = v;
+          t2.checked = v;
+          t3.checked = v;
+          update();
+        });
+
+        [t1, t2, t3].forEach(cb => cb.addEventListener("change", update));
+
+        // initial
+        update();
+
+        // optional: click CTA
+        cta.addEventListener("click", () => {
+          alert("동의 완료! (데모)");
+        });
+      </script>
+
+    </div>
+  </div>
 </body>
 </html>
