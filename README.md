@@ -1,152 +1,92 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-  <meta charset="UTF-8">
-  <title>RivalScope</title>
-  <style>
-    body { font-family: sans-serif; background: #111; color: #fff; }
-    .container { display: flex; gap: 20px; padding: 20px; }
-    .left, .right { flex: 1; }
-    .card { background: #1e1e1e; padding: 16px; border-radius: 10px; margin-bottom: 12px; }
-  </style>
-</head>
+# 🔥 RivalScope
+AI 기반 경쟁 게임 리서치 자동화 도구
 
-<body>
+> 경쟁 게임 분석을 수 시간 → 수 분으로 단축
 
-<div class="container">
-  <div class="left">
-    <input id="gameInput" placeholder="경쟁 게임명 입력" />
-    <button onclick="handleAnalyze()">분석하기</button>
-  </div>
+---
 
-  <div class="right">
-    <div id="loading" style="display:none;">분석 중...</div>
-    <div id="result"></div>
-  </div>
-</div>
+## 👤 Role
+**Product Manager**
+- 문제 정의 및 사용자 니즈 분석
+- AI 기능 기획 및 UX 설계
+- 프로토타입 제작 및 검증
 
-<script>
-const API_KEY = "YOUR_API_KEY";
+---
 
-/* =========================
-   MAIN FLOW
-========================= */
-async function handleAnalyze() {
-  const game = document.getElementById("gameInput").value;
-  if (!game) return alert("게임명을 입력하세요");
+## 🎯 Problem
 
-  showLoading();
+경쟁 게임 리서치는 다음과 같은 문제가 있음:
 
-  try {
-    const data = await fetchAnalysis(game);
-    renderAll(data);
-  } catch (e) {
-    console.error(e);
-    alert("분석 실패");
-  } finally {
-    hideLoading();
-  }
-}
+- 앱스토어 / 커뮤니티 / 뉴스 등 정보가 분산
+- 수천 개 리뷰를 수작업으로 분석해야 함
+- 담당자 역량에 따라 인사이트 품질 편차 발생
 
-/* =========================
-   API CALL
-========================= */
-async function fetchAnalysis(game) {
-  const response = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": API_KEY,
-      "anthropic-version": "2023-06-01"
-    },
-    body: JSON.stringify({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 1500,
-      messages: [{
-        role: "user",
-        content: `게임 ${game} 분석해서 JSON으로 반환해`
-      }]
-    })
-  });
+👉 결과  
+- 리서치에 수 시간 소요  
+- 실시간 대응 어려움
 
-  const result = await response.json();
-  return parseJSON(result);
-}
+---
 
-/* =========================
-   JSON PARSE
-========================= */
-function parseJSON(result) {
-  try {
-    const text = result.content?.[0]?.text || "";
-    return JSON.parse(text);
-  } catch (e) {
-    console.error("JSON 파싱 실패", e);
-    return null;
-  }
-}
+## 💡 Solution
 
-/* =========================
-   RENDER
-========================= */
-function renderAll(data) {
-  if (!data) return;
+RivalScope는  
+**게임 이름 1개 입력만으로 경쟁 분석을 자동화**
 
-  const container = document.getElementById("result");
-  container.innerHTML = `
-    ${renderProfile(data.profile)}
-    ${renderReactions(data.user_reactions)}
-    ${renderStrengths(data)}
-    ${renderInsights(data.insights)}
-  `;
-}
+### 핵심 기능
+- 경쟁 게임 프로필 자동 생성
+- 유저 반응 (긍정 / 부정) 요약
+- 강점 / 약점 비교
+- 우리 게임 적용 인사이트 도출
 
-function renderProfile(profile) {
-  return `
-    <div class="card">
-      <h3>${profile.name}</h3>
-      <p>${profile.genre} / ${profile.publisher}</p>
-    </div>
-  `;
-}
+---
 
-function renderReactions(reactions) {
-  return `
-    <div class="card">
-      👍 ${reactions.positives.join(", ")}<br>
-      👎 ${reactions.negatives.join(", ")}
-    </div>
-  `;
-}
+## 🧠 How it works
 
-function renderStrengths(data) {
-  return `
-    <div class="card">
-      <b>강점</b>: ${data.strengths.join(", ")}<br>
-      <b>약점</b>: ${data.weaknesses.join(", ")}
-    </div>
-  `;
-}
+Input → Web Search → AI 분석 → JSON 구조화 → UI 렌더링
 
-function renderInsights(insights) {
-  return `
-    <div class="card">
-      ${insights.map(i => `<p>${i.title}</p>`).join("")}
-    </div>
-  `;
-}
+- Claude Sonnet 4
+- Web Search Tool
+- JSON 기반 구조화 출력
 
-/* =========================
-   UI
-========================= */
-function showLoading() {
-  document.getElementById("loading").style.display = "block";
-}
+---
 
-function hideLoading() {
-  document.getElementById("loading").style.display = "none";
-}
-</script>
+## 🖥 Demo
 
-</body>
-</html>
+👉 https://sohybot.github.io/RivalScope/index.html  
+👉 https://youtu.be/Y8R2yI2faEs  
+
+---
+
+## ⚙️ Tech Stack
+
+- HTML / CSS / JavaScript (Vanilla)
+- Anthropic Claude API
+- Web Search Tool
+
+---
+
+## 🚀 Key Value
+
+- 리서치 시간 3시간 → 30초 단축
+- 비개발자도 즉시 사용 가능
+- 인사이트 품질 표준화
+
+---
+
+## 📌 Limitations
+
+- DB 저장 없음
+- 다중 게임 비교 미지원
+- API Key 필요 (클라이언트 실행)
+
+---
+
+## 📄 Documents
+
+- PRD / 문제 정의 / 해결 전략 → docs 폴더 참고
+
+---
+
+## 📷 Preview
+
+![demo](./assets/demo.gif)
