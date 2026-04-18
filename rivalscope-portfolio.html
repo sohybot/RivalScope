@@ -1,0 +1,1744 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RivalScope — 박소현 AI 프로덕트 기획자</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+KR:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #111118;
+    --bg3: #18181f;
+    --surface: #1e1e28;
+    --border: rgba(255,255,255,0.07);
+    --accent: #6ee7b7;
+    --accent2: #818cf8;
+    --accent3: #f472b6;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --white: #ffffff;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.4;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.2rem 4rem;
+    background: rgba(10,10,15,0.8);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    letter-spacing: 0.1em;
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .nav-logo span {
+    color: var(--accent);
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.82rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--accent); }
+
+  .nav-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 0.3rem 0.8rem;
+    border-radius: 2px;
+    opacity: 0.8;
+  }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    padding: 8rem 4rem 4rem;
+    gap: 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-glow {
+    position: absolute;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(110,231,183,0.08) 0%, transparent 70%);
+    top: 50%; left: 50%;
+    transform: translate(-20%, -50%);
+    pointer-events: none;
+  }
+
+  .hero-glow2 {
+    position: absolute;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(129,140,248,0.07) 0%, transparent 70%);
+    bottom: 10%; right: 10%;
+    pointer-events: none;
+  }
+
+  .hero-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.2s forwards;
+  }
+
+  .hero-label::before {
+    content: '';
+    width: 24px; height: 1px;
+    background: var(--accent);
+  }
+
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(4rem, 7vw, 7rem);
+    line-height: 0.92;
+    letter-spacing: -0.01em;
+    color: var(--white);
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.35s forwards;
+  }
+
+  .hero-title .highlight {
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--accent);
+  }
+
+  .hero-sub {
+    font-size: 1.05rem;
+    color: var(--muted);
+    max-width: 480px;
+    margin-bottom: 2.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.5s forwards;
+    line-height: 1.8;
+  }
+
+  .hero-sub strong {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 1rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.65s forwards;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--accent);
+    color: #0a0a0f;
+    padding: 0.85rem 2rem;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    border-radius: 3px;
+    transition: all 0.2s;
+  }
+
+  .btn-primary:hover {
+    background: #a7f3d0;
+    transform: translateY(-2px);
+  }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 0.85rem 2rem;
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    border-radius: 3px;
+    transition: all 0.2s;
+  }
+
+  .btn-ghost:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    transform: translateY(-2px);
+  }
+
+  /* hero right — mock UI */
+  .hero-mockup {
+    position: relative;
+    opacity: 0;
+    animation: fadeIn 1s 0.8s forwards;
+  }
+
+  .mockup-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.5);
+  }
+
+  .mockup-bar {
+    background: var(--bg3);
+    padding: 0.9rem 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-r { background: #ff5f57; }
+  .dot-y { background: #ffbd2e; }
+  .dot-g { background: #28c840; }
+
+  .mockup-title {
+    margin-left: 0.8rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+
+  .mockup-body {
+    display: grid;
+    grid-template-columns: 1fr 1.6fr;
+    min-height: 320px;
+  }
+
+  .mockup-left {
+    padding: 1.4rem;
+    border-right: 1px solid var(--border);
+  }
+
+  .mockup-field-label {
+    font-size: 0.65rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .mockup-field {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.5rem 0.7rem;
+    font-size: 0.78rem;
+    color: var(--text);
+    margin-bottom: 0.9rem;
+    width: 100%;
+  }
+
+  .mockup-field.active {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .mockup-btn {
+    width: 100%;
+    background: var(--accent);
+    color: #0a0a0f;
+    border: none;
+    border-radius: 4px;
+    padding: 0.55rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    font-family: 'Noto Sans KR', sans-serif;
+  }
+
+  .mockup-right {
+    padding: 1.4rem;
+  }
+
+  .profile-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(110,231,183,0.1);
+    border: 1px solid rgba(110,231,183,0.2);
+    border-radius: 2px;
+    padding: 0.25rem 0.6rem;
+    font-size: 0.62rem;
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    margin-bottom: 0.6rem;
+    letter-spacing: 0.05em;
+  }
+
+  .profile-name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 0.4rem;
+  }
+
+  .profile-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-bottom: 1rem;
+  }
+
+  .meta-tag {
+    font-size: 0.62rem;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 0.15rem 0.5rem;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .reaction-row {
+    display: flex;
+    gap: 0.35rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .badge-pos {
+    font-size: 0.6rem;
+    background: rgba(110,231,183,0.12);
+    color: var(--accent);
+    border-radius: 2px;
+    padding: 0.15rem 0.5rem;
+    border: 1px solid rgba(110,231,183,0.2);
+  }
+
+  .badge-neg {
+    font-size: 0.6rem;
+    background: rgba(244,114,182,0.12);
+    color: var(--accent3);
+    border-radius: 2px;
+    padding: 0.15rem 0.5rem;
+    border: 1px solid rgba(244,114,182,0.2);
+  }
+
+  .scanning-bar {
+    height: 3px;
+    background: var(--bg3);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 1rem;
+  }
+
+  .scanning-fill {
+    height: 100%;
+    width: 60%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    animation: scan 2s ease-in-out infinite;
+    border-radius: 2px;
+  }
+
+  @keyframes scan {
+    0% { width: 0%; }
+    50% { width: 85%; }
+    100% { width: 100%; }
+  }
+
+  /* ── SECTION BASE ── */
+  section {
+    padding: 8rem 4rem;
+  }
+
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .section-label::before {
+    content: '';
+    width: 20px; height: 1px;
+    background: var(--accent);
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.4rem, 4vw, 3.8rem);
+    color: var(--white);
+    line-height: 1;
+    letter-spacing: 0.02em;
+    margin-bottom: 1rem;
+  }
+
+  .section-desc {
+    color: var(--muted);
+    font-size: 0.95rem;
+    max-width: 560px;
+    line-height: 1.8;
+  }
+
+  /* ── PROBLEM ── */
+  #problem {
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .problem-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    margin-top: 4rem;
+    align-items: start;
+  }
+
+  .flow-diagram {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .flow-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.2rem;
+    position: relative;
+  }
+
+  .flow-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 19px;
+    top: 40px;
+    width: 1px;
+    height: calc(100% + 0px);
+    background: var(--border);
+  }
+
+  .flow-icon {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .flow-content {
+    padding: 0 0 2.5rem;
+  }
+
+  .flow-content h4 {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.3rem;
+  }
+
+  .flow-content p {
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+
+  .problem-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .problem-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent3);
+    border-radius: 6px;
+    padding: 1.2rem 1.4rem;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+
+  .problem-card:hover {
+    transform: translateX(4px);
+    border-left-color: var(--accent);
+  }
+
+  .problem-card h4 {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 0.4rem;
+  }
+
+  .problem-card p {
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+
+  /* ── SOLUTION ── */
+  #solution {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .solution-steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5px;
+    margin-top: 4rem;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .step-block {
+    background: var(--bg);
+    padding: 2.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s;
+  }
+
+  .step-block:hover {
+    background: var(--surface);
+  }
+
+  .step-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 5rem;
+    line-height: 1;
+    color: rgba(255,255,255,0.04);
+    position: absolute;
+    top: 0.5rem; right: 1rem;
+    letter-spacing: -0.02em;
+  }
+
+  .step-icon-wrap {
+    width: 48px; height: 48px;
+    background: rgba(110,231,183,0.08);
+    border: 1px solid rgba(110,231,183,0.15);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .step-block h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 0.6rem;
+  }
+
+  .step-block p {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.8;
+    margin-bottom: 1rem;
+  }
+
+  .step-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .step-tag {
+    font-size: 0.62rem;
+    font-family: 'JetBrains Mono', monospace;
+    background: rgba(129,140,248,0.1);
+    color: var(--accent2);
+    border: 1px solid rgba(129,140,248,0.2);
+    padding: 0.2rem 0.5rem;
+    border-radius: 2px;
+  }
+
+  /* ── FEATURES ── */
+  #features {
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .features-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: end;
+    margin-bottom: 4rem;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+
+  .feature-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 2rem;
+    transition: border-color 0.3s, transform 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .feature-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(110,231,183,0.03) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .feature-card:hover::before { opacity: 1; }
+  .feature-card:hover {
+    border-color: rgba(110,231,183,0.25);
+    transform: translateY(-4px);
+  }
+
+  .feature-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .feature-card h3 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 0.6rem;
+  }
+
+  .feature-card p {
+    font-size: 0.8rem;
+    color: var(--muted);
+    line-height: 1.8;
+  }
+
+  .feature-card .feature-detail {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .feature-detail-item {
+    font-size: 0.72rem;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .feature-detail-item::before {
+    content: '→';
+    color: var(--accent);
+    font-size: 0.7rem;
+  }
+
+  /* ── TECH STACK ── */
+  #tech {
+    position: relative;
+  }
+
+  .tech-layout {
+    display: grid;
+    grid-template-columns: 1fr 1.8fr;
+    gap: 5rem;
+    margin-top: 4rem;
+    align-items: start;
+  }
+
+  .tech-table {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .tech-table-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1.5fr;
+    padding: 0.8rem 1.4rem;
+    background: var(--bg3);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .tech-table-header span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .tech-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1.5fr;
+    padding: 1rem 1.4rem;
+    border-bottom: 1px solid var(--border);
+    gap: 0.5rem;
+    align-items: center;
+    transition: background 0.2s;
+  }
+
+  .tech-row:last-child { border-bottom: none; }
+  .tech-row:hover { background: rgba(110,231,183,0.03); }
+
+  .tech-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--accent);
+  }
+
+  .tech-role {
+    font-size: 0.78rem;
+    color: var(--text);
+  }
+
+  .tech-why {
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+
+  .why-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 2rem;
+  }
+
+  .why-box h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
+    color: var(--white);
+    margin-bottom: 1.4rem;
+    letter-spacing: 0.05em;
+  }
+
+  .why-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .why-item:last-child { border-bottom: none; }
+
+  .why-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.5rem;
+    color: var(--accent);
+    line-height: 1;
+    flex-shrink: 0;
+    width: 2rem;
+    opacity: 0.6;
+  }
+
+  .why-content h4 {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 0.3rem;
+  }
+
+  .why-content p {
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  /* ── PROTOTYPE / FLOW ── */
+  #prototype {
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .flow-steps-h {
+    display: flex;
+    gap: 0;
+    margin-top: 4rem;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .flow-step-h {
+    flex: 1;
+    padding: 2rem 1.5rem;
+    position: relative;
+    background: var(--bg);
+    border-right: 1px solid var(--border);
+    transition: background 0.3s;
+  }
+
+  .flow-step-h:last-child { border-right: none; }
+  .flow-step-h:hover { background: var(--surface); }
+
+  .flow-step-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.5rem;
+    color: rgba(110,231,183,0.15);
+    line-height: 1;
+    margin-bottom: 0.8rem;
+  }
+
+  .flow-step-h h4 {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 0.6rem;
+  }
+
+  .flow-step-h p {
+    font-size: 0.76rem;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  .flow-step-h .step-badge {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    background: rgba(110,231,183,0.1);
+    color: var(--accent);
+    border: 1px solid rgba(110,231,183,0.15);
+    border-radius: 2px;
+    padding: 0.15rem 0.45rem;
+    margin-bottom: 0.6rem;
+  }
+
+  /* IO DESIGN */
+  .io-grid {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 2rem;
+    align-items: center;
+    margin-top: 3rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 2.5rem;
+  }
+
+  .io-block h4 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .io-item {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 0.8rem;
+    color: var(--text);
+  }
+
+  .io-item:last-child { border-bottom: none; }
+
+  .io-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+  }
+
+  .io-dot.optional {
+    background: var(--muted);
+  }
+
+  .io-badge {
+    font-size: 0.58rem;
+    font-family: 'JetBrains Mono', monospace;
+    background: rgba(110,231,183,0.1);
+    color: var(--accent);
+    border-radius: 2px;
+    padding: 0.1rem 0.35rem;
+  }
+
+  .io-arrow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .io-arrow-line {
+    font-size: 2rem;
+    color: var(--muted);
+    line-height: 1;
+  }
+
+  .io-arrow-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  /* ── VALIDATION ── */
+  #validation {
+    position: relative;
+  }
+
+  .validation-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 4rem;
+  }
+
+  .validation-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .validation-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+  }
+
+  .validation-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .validation-card h3 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 0.6rem;
+  }
+
+  .validation-card p {
+    font-size: 0.8rem;
+    color: var(--muted);
+    line-height: 1.8;
+  }
+
+  .goal-stat {
+    margin-top: 4rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 3rem;
+    display: flex;
+    align-items: center;
+    gap: 4rem;
+  }
+
+  .stat-big {
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .stat-big .num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 5rem;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .stat-big .unit {
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+
+  .stat-arrow {
+    font-size: 2rem;
+    color: var(--muted);
+  }
+
+  .stat-desc h4 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 0.6rem;
+  }
+
+  .stat-desc p {
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.8;
+  }
+
+  /* ── ABOUT ── */
+  #about {
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+  }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: center;
+    margin-top: 4rem;
+  }
+
+  .about-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3.5rem;
+    color: var(--white);
+    letter-spacing: 0.05em;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+
+  .about-role {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    margin-bottom: 2rem;
+  }
+
+  .about-text {
+    font-size: 0.9rem;
+    color: var(--muted);
+    line-height: 1.9;
+    margin-bottom: 2rem;
+  }
+
+  .skill-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .chip {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 0.35rem 0.8rem;
+    border-radius: 2px;
+    transition: border-color 0.2s, color 0.2s;
+  }
+
+  .chip:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .about-highlight-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .highlight-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.4rem;
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    transition: border-color 0.2s;
+  }
+
+  .highlight-card:hover {
+    border-color: rgba(110,231,183,0.2);
+  }
+
+  .h-icon {
+    font-size: 1.4rem;
+    flex-shrink: 0;
+  }
+
+  .h-content h4 {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 0.3rem;
+  }
+
+  .h-content p {
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 3rem 4rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .footer-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    color: var(--white);
+    letter-spacing: 0.1em;
+  }
+
+  .footer-logo span { color: var(--accent); }
+
+  .footer-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--muted);
+    text-align: center;
+    line-height: 1.8;
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  .footer-links a {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    transition: color 0.2s;
+  }
+
+  .footer-links a:hover { color: var(--accent); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--surface); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Rival<span>Scope</span></div>
+  <ul class="nav-links">
+    <li><a href="#problem">문제정의</a></li>
+    <li><a href="#solution">해결방법</a></li>
+    <li><a href="#features">핵심기능</a></li>
+    <li><a href="#tech">기술스택</a></li>
+    <li><a href="#prototype">프로토타입</a></li>
+    <li><a href="#about">기획자</a></li>
+  </ul>
+  <div class="nav-tag">INTERNAL ALPHA</div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
+
+  <div>
+    <div class="hero-label">AI Product Portfolio · 박소현</div>
+    <h1 class="hero-title">
+      경쟁 게임<br>리서치를<br><span class="highlight">AI로</span>
+    </h1>
+    <p class="hero-sub">
+      수 시간의 수작업 리서치를 <strong>30초</strong>로. Claude AI와 실시간 웹 검색을 결합해 경쟁 게임의 최신 업데이트·유저 반응·강약점을 자동 분석하고 즉시 활용 가능한 인사이트를 제공합니다.
+    </p>
+    <div class="hero-cta">
+      <a href="#solution" class="btn-primary">솔루션 보기 →</a>
+      <a href="#about" class="btn-ghost">기획자 소개</a>
+    </div>
+  </div>
+
+  <!-- Mock UI -->
+  <div class="hero-mockup">
+    <div class="mockup-card">
+      <div class="mockup-bar">
+        <div class="dot dot-r"></div>
+        <div class="dot dot-y"></div>
+        <div class="dot dot-g"></div>
+        <span class="mockup-title">RivalScope · AI-POWERED INTELLIGENCE</span>
+      </div>
+      <div class="mockup-body">
+        <div class="mockup-left">
+          <div class="mockup-field-label">경쟁 게임명 *</div>
+          <div class="mockup-field active">원신</div>
+          <div class="mockup-field-label">우리 게임 장르</div>
+          <div class="mockup-field">수집형 RPG</div>
+          <div class="mockup-field-label">분석 중점 항목</div>
+          <div class="mockup-field">전반적 분석</div>
+          <button class="mockup-btn">🔍 분석 시작하기</button>
+        </div>
+        <div class="mockup-right">
+          <div class="profile-chip">● SCANNING...</div>
+          <div class="profile-name">원신 (Genshin Impact)</div>
+          <div class="profile-meta">
+            <span class="meta-tag">오픈월드 RPG</span>
+            <span class="meta-tag">HoYoverse</span>
+            <span class="meta-tag">F2P · Gacha</span>
+          </div>
+          <div class="reaction-row">
+            <span class="badge-pos">🎨 비주얼</span>
+            <span class="badge-pos">🎵 OST</span>
+            <span class="badge-pos">🗺 오픈월드</span>
+          </div>
+          <div class="reaction-row">
+            <span class="badge-neg">💸 과금 압박</span>
+            <span class="badge-neg">⚡ 레진 한계</span>
+            <span class="badge-neg">🔄 반복 퀘스트</span>
+          </div>
+          <div class="scanning-bar">
+            <div class="scanning-fill"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section id="problem">
+  <div class="section-label">01 · Problem</div>
+  <h2 class="section-title">왜 경쟁 게임<br>리서치가 힘든가?</h2>
+
+  <div class="problem-grid">
+    <div>
+      <p class="section-desc">신규 게임 출시 또는 라이브 서비스 운영 시, 담당자는 앱스토어 리뷰·커뮤니티 글·업데이트 노트·유튜브 영상 등 다양한 데이터를 수작업으로 수집·정리해야 합니다.</p>
+      <br>
+      <div class="flow-diagram" style="margin-top:2rem;">
+        <div class="flow-step">
+          <div class="flow-icon">🔍</div>
+          <div class="flow-content">
+            <h4>Google 검색</h4>
+            <p>키워드로 정보 수집 — 여러 탭, 수십 분 소요</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-icon">📱</div>
+          <div class="flow-content">
+            <h4>앱스토어 · 커뮤니티 탐색</h4>
+            <p>리뷰와 게시글 수동 열람 — 채널이 제각각</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-icon">📊</div>
+          <div class="flow-content">
+            <h4>엑셀 정리</h4>
+            <p>데이터 수집 및 분류 — 담당자 역량 의존</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-icon">📝</div>
+          <div class="flow-content">
+            <h4>팀 공유 문서 작성</h4>
+            <p>인사이트 작성 및 공유 — 총 2~4시간</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="problem-cards reveal">
+      <div class="problem-card">
+        <h4>📡 정보 분산</h4>
+        <p>앱스토어·커뮤니티·뉴스 등 채널이 제각각으로 흩어져 있어 취합에 불필요한 시간이 소모됩니다.</p>
+      </div>
+      <div class="problem-card">
+        <h4>⏳ 트렌드 파악 지연</h4>
+        <p>수천 건의 리뷰를 직접 읽어야 해 최신 유저 반응을 실시간으로 포착하기 어렵습니다.</p>
+      </div>
+      <div class="problem-card">
+        <h4>📉 인사이트 편차</h4>
+        <p>담당자의 역량에 따라 결과물 품질이 달라져 팀 전체의 일관된 분석이 어렵습니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SOLUTION -->
+<section id="solution">
+  <div class="section-label">02 · Solution</div>
+  <h2 class="section-title">RivalScope가<br>해결하는 방식</h2>
+  <p class="section-desc">경쟁 게임명 입력만으로 AI가 최신 정보를 실시간 수집·분석하여 인사이트 카드를 자동 생성합니다.</p>
+
+  <div class="solution-steps reveal">
+    <div class="step-block">
+      <div class="step-num">1</div>
+      <div class="step-icon-wrap">🎮</div>
+      <h3>경쟁 게임 프로필 자동 생성</h3>
+      <p>장르·수익모델·타겟층·업데이트 이력을 AI가 웹 기반으로 자동 검색·요약합니다. 앱스토어 직접 확인 없이 핵심 정보를 카드 형태로 즉시 제공합니다.</p>
+      <div class="step-tags">
+        <span class="step-tag">웹 검색 자동화</span>
+        <span class="step-tag">프로필 카드</span>
+        <span class="step-tag">메타데이터 추출</span>
+      </div>
+    </div>
+
+    <div class="step-block">
+      <div class="step-num">2</div>
+      <div class="step-icon-wrap">💬</div>
+      <h3>유저 반응 자동 분석</h3>
+      <p>긍정·부정 키워드를 자동 추출하여 주요 불만·호평 포인트를 요약합니다. 수천 건의 리뷰·커뮤니티 반응을 분석해 트렌드를 즉시 파악합니다.</p>
+      <div class="step-tags">
+        <span class="step-tag">감성 분석</span>
+        <span class="step-tag">키워드 추출</span>
+        <span class="step-tag">트렌드 감지</span>
+      </div>
+    </div>
+
+    <div class="step-block">
+      <div class="step-num">3</div>
+      <div class="step-icon-wrap">⚡</div>
+      <h3>강약점 비교 + 시사점 도출</h3>
+      <p>경쟁 게임 대비 차별점을 자동 분석하고 우리 게임에 적용 가능한 전략·개선 요소를 추천합니다. 팀 전체 인사이트 품질을 표준화합니다.</p>
+      <div class="step-tags">
+        <span class="step-tag">SWOT 분석</span>
+        <span class="step-tag">전략 추천</span>
+        <span class="step-tag">팀 표준화</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="features-header">
+    <div>
+      <div class="section-label">03 · Features</div>
+      <h2 class="section-title">핵심 기능</h2>
+    </div>
+    <p class="section-desc">단일 분석 요청으로 3가지 인사이트 블록을 자동 생성합니다. 구조화된 결과를 즉시 도출하고 팀 공유 문서로 바로 Export 가능합니다.</p>
+  </div>
+
+  <div class="features-grid reveal">
+    <div class="feature-card">
+      <span class="feature-icon">🃏</span>
+      <h3>프로필 카드</h3>
+      <p>이름·장르·퍼블리셔·수익모델·타겟층·업데이트 이력을 경쟁 게임 핵심 프로필로 한 화면에 요약합니다.</p>
+      <div class="feature-detail">
+        <div class="feature-detail-item">이름 · 장르 · 퍼블리셔</div>
+        <div class="feature-detail-item">수익모델 · 타겟층</div>
+        <div class="feature-detail-item">최신 업데이트 요약</div>
+      </div>
+    </div>
+
+    <div class="feature-card">
+      <span class="feature-icon">💬</span>
+      <h3>유저 반응 요약</h3>
+      <p>긍정 배지 3개·부정 배지 3개로 유저 반응 키워드를 분류하여 주요 호평·불만 포인트를 한눈에 요약합니다.</p>
+      <div class="feature-detail">
+        <div class="feature-detail-item">긍정 배지 3개 (초록)</div>
+        <div class="feature-detail-item">부정 배지 3개 (빨강)</div>
+        <div class="feature-detail-item">트렌드 즉시 파악</div>
+      </div>
+    </div>
+
+    <div class="feature-card">
+      <span class="feature-icon">⚡</span>
+      <h3>강약점 & 시사점</h3>
+      <p>강점·약점 2컬럼 비교표를 자동 생성하고 '우리 게임 적용 아이디어' 카드 3개를 도출합니다.</p>
+      <div class="feature-detail">
+        <div class="feature-detail-item">강점 / 약점 2컬럼 비교</div>
+        <div class="feature-detail-item">적용 아이디어 3개</div>
+        <div class="feature-detail-item">즉시 기획 활용 가능</div>
+      </div>
+    </div>
+
+    <div class="feature-card">
+      <span class="feature-icon">🤖</span>
+      <h3>추가 질문 챗</h3>
+      <p>분석 결과 컨텍스트를 유지한 멀티턴 챗 인터페이스로 심화 분석이 가능합니다.</p>
+      <div class="feature-detail">
+        <div class="feature-detail-item">컨텍스트 유지 대화</div>
+        <div class="feature-detail-item">심화 질문 지원</div>
+      </div>
+    </div>
+
+    <div class="feature-card">
+      <span class="feature-icon">📤</span>
+      <h3>리포트 Export</h3>
+      <p>완성된 분석 결과를 팀 공유 문서로 즉시 Export하여 리서치 워크플로우를 완성합니다.</p>
+      <div class="feature-detail">
+        <div class="feature-detail-item">팀 공유 즉시 가능</div>
+        <div class="feature-detail-item">구조화된 포맷</div>
+      </div>
+    </div>
+
+    <div class="feature-card">
+      <span class="feature-icon">🌐</span>
+      <h3>실시간 웹 검색</h3>
+      <p>학습 데이터 cutoff 이후 업데이트·이슈도 실시간으로 탐지하여 항상 최신 정보를 제공합니다.</p>
+      <div class="feature-detail">
+        <div class="feature-detail-item">실시간 정보 수집</div>
+        <div class="feature-detail-item">최신 업데이트 반영</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TECH STACK -->
+<section id="tech">
+  <div class="section-label">04 · Tech Stack</div>
+  <h2 class="section-title">사용할 AI 도구</h2>
+  <p class="section-desc">Claude Sonnet 4를 메인 추론 엔진으로, 검색과 분석을 하나의 API로 통합합니다.</p>
+
+  <div class="tech-layout reveal">
+    <div>
+      <div class="tech-table">
+        <div class="tech-table-header">
+          <span>도구</span>
+          <span>역할</span>
+          <span>사용이유</span>
+        </div>
+        <div class="tech-row">
+          <div class="tech-name">web_search<br>_20250305</div>
+          <div class="tech-role">실시간 웹 검색</div>
+          <div class="tech-why">cutoff 이후 업데이트도 탐지 가능</div>
+        </div>
+        <div class="tech-row">
+          <div class="tech-name">Claude<br>Sonnet 4</div>
+          <div class="tech-role">추론 · 인사이트 구조화</div>
+          <div class="tech-why">장문 컨텍스트 + JSON 출력 안정</div>
+        </div>
+        <div class="tech-row">
+          <div class="tech-name">/v1/messages<br>API</div>
+          <div class="tech-role">프론트엔드 AI 연결</div>
+          <div class="tech-why">Tool Use 지원, 브라우저 직접 호출</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="why-box">
+      <h3>왜 Claude인가?</h3>
+      <div class="why-item">
+        <div class="why-num">01</div>
+        <div class="why-content">
+          <h4>검색 + 분석 하나의 API로 통합</h4>
+          <p>별도의 크롤러나 외부 API 없이 Claude 단일 API로 실시간 웹 검색과 인사이트 구조화를 동시에 처리합니다.</p>
+        </div>
+      </div>
+      <div class="why-item">
+        <div class="why-num">02</div>
+        <div class="why-content">
+          <h4>대량 정보 요약·구조화 성능 우수</h4>
+          <p>수천 건의 리뷰와 커뮤니티 반응을 장문 컨텍스트로 이해하고 즉시 활용 가능한 구조로 변환합니다.</p>
+        </div>
+      </div>
+      <div class="why-item">
+        <div class="why-num">03</div>
+        <div class="why-content">
+          <h4>JSON 출력 안정성으로 렌더링 오류 최소화</h4>
+          <p>시스템 프롬프트 스키마 명시 시 일관된 JSON을 반환하여 UI 렌더링 오류를 최소화합니다.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROTOTYPE -->
+<section id="prototype">
+  <div class="section-label">05 · Prototype</div>
+  <h2 class="section-title">프로토타입</h2>
+  <p class="section-desc">Claude Artifacts 환경에서 단일 HTML 파일로 구현. 설치 없이 브라우저에서 즉시 실행·검증 가능합니다.</p>
+
+  <div class="flow-steps-h reveal">
+    <div class="flow-step-h">
+      <div class="step-badge">STEP 01</div>
+      <div class="flow-step-num">01</div>
+      <h4>Tool Use 처리</h4>
+      <p>tools 파라미터에 web_search_20250305 포함. 응답 content 배열에서 text 블록만 필터링·추출합니다.</p>
+    </div>
+    <div class="flow-step-h">
+      <div class="step-badge">STEP 02</div>
+      <div class="flow-step-num">02</div>
+      <h4>JSON 구조화 출력</h4>
+      <p>시스템 프롬프트에 JSON 스키마 명시. 코드펜스 제거 후 JSON.parse()로 파싱, 실패 시 fallback 렌더링.</p>
+    </div>
+    <div class="flow-step-h">
+      <div class="step-badge">STEP 03</div>
+      <div class="flow-step-num">03</div>
+      <h4>챗 컨텍스트 유지</h4>
+      <p>초기 분석 결과를 chatHistory에 누적 저장. 추가 질문 시 이전 분석 맥락 유지 및 확장 가능합니다.</p>
+    </div>
+    <div class="flow-step-h">
+      <div class="step-badge">STEP 04</div>
+      <div class="flow-step-num">04</div>
+      <h4>즉시 실행</h4>
+      <p>API 키 입력 후 경쟁 게임명만으로 즉시 실행. 외부 서버 없이 클라이언트 사이드에서 직접 통신합니다.</p>
+    </div>
+  </div>
+
+  <div class="io-grid reveal">
+    <div class="io-block">
+      <h4>INPUT</h4>
+      <div class="io-item"><div class="io-dot"></div>경쟁 게임명 <span class="io-badge">필수</span></div>
+      <div class="io-item"><div class="io-dot optional"></div>우리 게임 장르 <span class="io-badge" style="background:rgba(100,116,139,0.1);color:var(--muted);border-color:rgba(100,116,139,0.2);">선택</span></div>
+      <div class="io-item"><div class="io-dot optional"></div>우리 게임 특징 <span class="io-badge" style="background:rgba(100,116,139,0.1);color:var(--muted);border-color:rgba(100,116,139,0.2);">선택</span></div>
+      <div class="io-item"><div class="io-dot optional"></div>중점 분석 항목 <span class="io-badge" style="background:rgba(100,116,139,0.1);color:var(--muted);border-color:rgba(100,116,139,0.2);">선택</span></div>
+    </div>
+
+    <div class="io-arrow">
+      <div class="io-arrow-line">→</div>
+      <div class="io-arrow-label">Claude 웹 검색<br>수집 → 구조화<br>JSON 반환</div>
+    </div>
+
+    <div class="io-block">
+      <h4>OUTPUT</h4>
+      <div class="io-item"><div class="io-dot"></div>경쟁 게임 프로필 카드</div>
+      <div class="io-item"><div class="io-dot"></div>유저 반응 (긍정 3 / 부정 3 태그)</div>
+      <div class="io-item"><div class="io-dot"></div>강점 / 약점 2컬럼</div>
+      <div class="io-item"><div class="io-dot"></div>우리 게임 적용 시사점 카드 3개</div>
+      <div class="io-item"><div class="io-dot"></div>추가 질문 챗 인터페이스</div>
+    </div>
+  </div>
+</section>
+
+<!-- VALIDATION -->
+<section id="validation">
+  <div class="section-label">06 · Validation</div>
+  <h2 class="section-title">프로토타입 목적</h2>
+  <p class="section-desc">단일 도구의 기능 테스트를 넘어, 실제 기획 워크플로우에 AI가 통합될 수 있는지를 판단하는 기준점입니다.</p>
+
+  <div class="goal-stat reveal">
+    <div class="stat-big">
+      <div class="num">3H</div>
+      <div class="unit">기존 수작업 리서치</div>
+    </div>
+    <div class="stat-arrow">→</div>
+    <div class="stat-big">
+      <div class="num">30s</div>
+      <div class="unit">RivalScope 목표 시간</div>
+    </div>
+    <div style="width:1px;background:var(--border);align-self:stretch;"></div>
+    <div class="stat-desc">
+      <h4>검증 목표</h4>
+      <p>"경쟁 게임명 1개 입력만으로 3시간 리서치를 30초로 단축할 수 있는가." 단순 속도 개선을 넘어 정보 정확성·인사이트 활용성·비개발 직군 접근성까지 검증합니다.</p>
+    </div>
+  </div>
+
+  <div class="validation-grid reveal">
+    <div class="validation-card">
+      <div class="validation-icon">🎯</div>
+      <h3>정보 수집 정확도</h3>
+      <p>Claude 웹 검색이 최신 게임 정보를 정확히 가져오는지 확인합니다. 학습 cutoff 이후의 업데이트·이슈도 실시간으로 탐지합니다.</p>
+    </div>
+    <div class="validation-card">
+      <div class="validation-icon">📐</div>
+      <h3>구조화 변환 품질</h3>
+      <p>프로필·강약점·시사점 형태로 즉시 활용 가능한 구조인지 확인합니다. JSON 출력 안정성과 렌더링 정확도를 검증합니다.</p>
+    </div>
+    <div class="validation-card">
+      <div class="validation-icon">👩‍💼</div>
+      <h3>UI 접근성</h3>
+      <p>비개발 직군이 별도 교육 없이 즉시 사용할 수 있는 인터페이스인지 확인합니다. 게임 기획자·사업개발·마케터 모두를 대상으로 합니다.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-label">07 · About</div>
+  <div class="about-grid">
+    <div>
+      <div class="about-name">박소현</div>
+      <div class="about-role">AI PRODUCT PLANNER</div>
+      <p class="about-text">
+        게임 회사의 기획 워크플로우에 AI를 통합하는 데 관심을 갖고 RivalScope를 기획했습니다. 경쟁 게임 분석에 하루를 쏟는 기획자·마케터·사업개발 담당자들의 문제를 직접 해결하고자 Claude AI와 실시간 웹 검색을 결합한 리서치 자동화 도구를 설계했습니다.
+      </p>
+      <div class="skill-chips">
+        <span class="chip">AI Product Planning</span>
+        <span class="chip">UX Design</span>
+        <span class="chip">Claude API</span>
+        <span class="chip">Game Industry</span>
+        <span class="chip">Vibe Coding</span>
+        <span class="chip">Competitive Analysis</span>
+        <span class="chip">Live Service</span>
+        <span class="chip">Prompt Engineering</span>
+      </div>
+    </div>
+
+    <div class="about-highlight-cards">
+      <div class="highlight-card">
+        <div class="h-icon">🎮</div>
+        <div class="h-content">
+          <h4>게임 업계 페인포인트에서 출발</h4>
+          <p>게임 기획자(PM), 사업개발, 마케터 모두가 겪는 경쟁 분석의 비효율을 직접 경험하고 AI로 해결하는 제품을 기획했습니다.</p>
+        </div>
+      </div>
+      <div class="highlight-card">
+        <div class="h-icon">🤖</div>
+        <div class="h-content">
+          <h4>Claude AI 기반 프로토타입 직접 구현</h4>
+          <p>바이브코딩을 통해 Anthropic API + Web Search Tool을 활용한 단일 HTML 파일 프로토타입을 직접 제작했습니다.</p>
+        </div>
+      </div>
+      <div class="highlight-card">
+        <div class="h-icon">📊</div>
+        <div class="h-content">
+          <h4>명확한 검증 목표 설정</h4>
+          <p>단순 기능 개발이 아닌 정보 정확도·구조화 품질·UI 접근성의 3가지 핵심 가설을 설정하고 검증하는 방식으로 프로덕트를 설계합니다.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">Rival<span>Scope</span></div>
+  <div class="footer-meta">
+    AI Product Portfolio · 박소현<br>
+    <span style="font-size:0.6rem;opacity:0.5;">claude-sonnet-4-20250514 · web_search_20250305 · Anthropic /v1/messages</span>
+  </div>
+  <div class="footer-links">
+    <a href="#hero">↑ 맨 위로</a>
+    <a href="#problem">문제정의</a>
+    <a href="#solution">솔루션</a>
+  </div>
+</footer>
+
+<script>
+  // Intersection Observer for reveal animations
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  reveals.forEach(el => observer.observe(el));
+
+  // Nav active state
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 200) current = s.id;
+    });
+    navLinks.forEach(a => {
+      a.style.color = a.getAttribute('href') === `#${current}` ? 'var(--accent)' : '';
+    });
+  });
+</script>
+</body>
+</html>
