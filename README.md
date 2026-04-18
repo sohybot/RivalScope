@@ -1,4 +1,4 @@
-# RivalScope
+# RivalScope [Project Website](https://sohybot.github.io/RivalScope/rivalscope-portfolio.html)
 AI 기반 경쟁 게임 리서치 자동화 도구
 
 > 경쟁 게임 분석을 수 시간 → 수 분으로 단축
