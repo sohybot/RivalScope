@@ -1,4 +1,4 @@
-# 🔥 RivalScope
+# RivalScope
 AI 기반 경쟁 게임 리서치 자동화 도구
 
 > 경쟁 게임 분석을 수 시간 → 수 분으로 단축
@@ -52,8 +52,8 @@ Input → Web Search → AI 분석 → JSON 구조화 → UI 렌더링
 
 ## 🖥 Demo
 
-👉 [🚀 RivalScope 실행하기](https://sohybot.github.io/RivalScope)
-👉 [🚀 RivalScope 데모](https://youtu.be/Y8R2yI2faEs)
+👉 [ RivalScope 실행하기](https://sohybot.github.io/RivalScope)
+👉 [ RivalScope 데모](https://youtu.be/Y8R2yI2faEs)
 
 ---
 
@@ -65,7 +65,7 @@ Input → Web Search → AI 분석 → JSON 구조화 → UI 렌더링
 
 ---
 
-## 🚀 Key Value
+## ⭐ Key Value
 
 - 리서치 시간 3시간 → 30초 단축
 - 비개발자도 즉시 사용 가능
