@@ -52,8 +52,8 @@ Input → Web Search → AI 분석 → JSON 구조화 → UI 렌더링
 
 ## 🖥 Demo
 
-👉 👉 [🚀 RivalScope 실행하기](https://sohybot.github.io/RivalScope/index.html)
-👉 https://youtu.be/Y8R2yI2faEs  
+👉 [🚀 RivalScope 실행하기](https://sohybot.github.io/RivalScope)
+👉 [🚀 RivalScope 데모](https://youtu.be/Y8R2yI2faEs)
 
 ---
 
@@ -87,6 +87,3 @@ Input → Web Search → AI 분석 → JSON 구조화 → UI 렌더링
 
 ---
 
-## 📷 Preview
-
-![demo](./assets/demo.gif)
